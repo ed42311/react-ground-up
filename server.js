@@ -29,7 +29,6 @@ router.route('/bears')
   .post(function(req, res){
     var bear = new Bear();
     bear.name = req.body.name;
-    bear.alias = req.body.alias;
 
     bear.save(function(err) {
         if(err)
@@ -62,7 +61,7 @@ router.route('/bears/:bear_id')
       if(err)
         res.send(err);
       bear.name = req.body.name;
-      bear.alias = req.body.alias;
+
       bear.save(function(err) {
         if(err)
           res.send(err);
