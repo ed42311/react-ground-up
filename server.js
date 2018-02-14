@@ -1,8 +1,8 @@
 var express =  require('express');
 var app = express();
 var bodyParser = require('body-parser');
-var mongoose = require('mongoose');
-mongoose.Promise = require('bluebird');
+var mongoose  = require('mongoose');
+// mongoose.Promise = require('bluebird');
 
 var Bear = require('./models/bear');
 
@@ -12,7 +12,7 @@ app.use(bodyParser.json());
 var port = process.env.PORT || 8080;
 var router = express.Router();
 
-mongoose.connect('mongodb://localhost/bears');
+mongoose.connection.openUri('mongodb://localhost/bears');
 
 router.use(function(res, req, next) {
   console.log("something is happening");
@@ -33,7 +33,7 @@ router.route('/bears')
     bear.save(function(err) {
         if(err)
           res.send(err);
-        res.json({ message: "Bear Created!" })
+        res.json({ message: "Bear is made, now is new Bear." })
       })
     })
 
@@ -65,7 +65,7 @@ router.route('/bears/:bear_id')
       bear.save(function(err) {
         if(err)
           res.send(err);
-        res.json({ message: "Bear Saved!" })
+        res.json({ message: "Bear was saved very good" })
       })
     })
   })
