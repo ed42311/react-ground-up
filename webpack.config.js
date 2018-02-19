@@ -8,13 +8,29 @@ const paths = {
 };
 
 module.exports = {
-  entry : "./src/js/index.js",
+  entry : path.join(paths.js, 'index.js'),
   output : {
-    filename : "./dist/bundle.js"
+    path : paths.dist,
+    filename : "bundle.js",
+    publicPath : "/"
   },
   plugins : [
     new HtmlWebpackPlugin({
       template : path.join(paths.src, "index.html"),
     }),
-  ]
+  ],
+  module : {
+    rules : [
+      {
+        test: /\.(js|jsx)$/,
+        exclude: /node_modules/,
+        use: [
+          "babel-loader"
+        ]
+      }
+    ]
+  },
+  resolve: {
+    extensions: [".js", ".jsx"]
+  },
 };
