@@ -10,6 +10,8 @@ import Bear from './models/Bear';
 app.use(bodyParser.urlencoded({ extended : true }));
 app.use(bodyParser.json());
 
+app.use('/', express.static(path.join()));
+
 const port = process.env.PORT || 8080;
 const router = express.Router();
 
