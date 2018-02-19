@@ -1,86 +1,97 @@
-var express =  require('express');
-var app = express();
-var bodyParser = require('body-parser');
-var mongoose  = require('mongoose');
-// mongoose.Promise = require('bluebird');
+import express from 'express';
+const app = express();
+import path from 'path';
+import bodyParser from 'body-parser';
+import mongoose from 'mongoose';
+mongoose.Promise = require('bluebird');
 
-var Bear = require('./models/bear');
+import Bear from './models/Bear';
 
 app.use(bodyParser.urlencoded({ extended : true }));
 app.use(bodyParser.json());
 
-var port = process.env.PORT || 8080;
-var router = express.Router();
+app.use('/',express.static(path.join(__dirname, "public")));
+
+const port = process.env.PORT || 8080;
+const router = express.Router();
 
 mongoose.connection.openUri('mongodb://localhost/bears');
 
-router.use(function(res, req, next) {
+router.use((res, req, next) => {
   console.log("something is happening");
   next();
-})
+});
 
-router.get('/', function(req, res) {
-  res.json({ message: "Hello, welcome to our api!"})
-})
-
+router.get('/', (req, res) => {
+  res.json({ message: "Hello, welcome to our api!"});
+});
 
 router.route('/bears')
 
-  .post(function(req, res){
-    var bear = new Bear();
-    bear.name = req.body.name;
-
-    bear.save(function(err) {
-        if(err)
-          res.send(err);
-        res.json({ message: "Bear is made, now is new Bear." })
-      })
-    })
-
-
-  .get(function(req, res){
-    Bear.find(function(err, bears){
-      if(err)
-        res.send(err)
-      res.json(bears)
-    })
-  })
-
-router.route('/bears/:bear_id')
-
-  .get(function(req, res){
-    Bear.findById(req.params.bear_id, function(err, bear){
-      if(err)
+  .post(({body}, res) => {
+    const bear = new Bear();
+    bear.name = body.name;
+    bear.save(err => {
+      if(err){
         res.send(err);
-      res.json(bear)
+      } else {
+        res.json({ message: "Bear is made, now is new Bear." });
+      }
     });
   })
 
-  .put(function(req,res){
-    Bear.findById(req.params.bear_id, function(err, bear){
-      if(err)
+  .get((req, res) => {
+    Bear.find((err, bears) => {
+      if(err) {
         res.send(err);
-      bear.name = req.body.name;
+      } else {
+        res.json(bears);
+      }
+    });
+  });
 
-      bear.save(function(err) {
-        if(err)
-          res.send(err);
-        res.json({ message: "Bear was saved very good" })
-      })
-    })
+router.route('/bears/:bear_id')
+
+  .get(({params}, res) => {
+    Bear.findById(params.bear_id, (err, bear) => {
+      if(err) {
+        res.send(err);
+      } else {
+        res.json(bear);
+      }
+    });
   })
 
-  .delete(function(req, res){
-    Bear.remove({
-      _id: req.params.bear_id
-    }, function(err, bear) {
-      if(err)
+  .put(({params, body}, res) => {
+    Bear.findById(params.bear_id, (err, bear) => {
+      if(err) {
         res.send(err);
+      } else {
+        bear.name = body.name;
+        bear.save(err => {
+          if(err) {
+            res.send(err);
+          } else {
+            res.json({ message: "Bear was saved very good" });
+          }
+        });
+      }
+    });
+  })
+
+  .delete(({params}, res) => {
+    Bear.remove({
+      _id: params.bear_id
+    }, (err, bear) => {
+      if(err) {
+        res.send(err);
+      } else {
         res.json({ message: "Now is dead bear."});
+      }
     });
   });
 
 app.use('/api', router);
 
 app.listen(port);
-console.log("magic happens on port" + port);
+console.log(`magic happens on port${port}`);
