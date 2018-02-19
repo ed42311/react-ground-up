@@ -16,6 +16,10 @@ var _mongoose = require('mongoose');
 
 var _mongoose2 = _interopRequireDefault(_mongoose);
 
+var _cors = require('cors');
+
+var _cors2 = _interopRequireDefault(_cors);
+
 var _Bear = require('./models/Bear');
 
 var _Bear2 = _interopRequireDefault(_Bear);
@@ -28,6 +32,7 @@ _mongoose2.default.Promise = require('bluebird');
 
 app.use(_bodyParser2.default.urlencoded({ extended: true }));
 app.use(_bodyParser2.default.json());
+app.use((0, _cors2.default)());
 
 app.use('/', _express2.default.static(_path2.default.join(__dirname, "public")));
 

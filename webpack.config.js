@@ -11,7 +11,8 @@ module.exports = {
   entry: path.join(paths.JS, 'app.js'),
   output: {
     path: paths.DIST,
-    filename: 'app.bundle.js'
+    filename: 'app.bundle.js',
+    publicPath: '/'
   },
   plugins: [
     new HtmlWebpackPlugin({
@@ -27,9 +28,20 @@ module.exports = {
           'babel-loader',
         ],
       },
+      {
+        test: /\.css$/,
+        use: [ 'style-loader', 'css-loader' ]
+      },
     ],
+  },
+  devServer: {
+    historyApiFallback: true,
   },
   resolve: {
     extensions: ['.js', '.jsx'],
+    alias: {
+      css: path.resolve(__dirname, 'src/css/'),
+      comp: path.resolve(__dirname, 'src/js/Components')
+    }
   },
 };
