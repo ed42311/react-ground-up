@@ -3,19 +3,19 @@ const app = express();
 import path from 'path';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
-// mongoose.Promise = require('bluebird');
+mongoose.Promise = require('bluebird');
 
-import Bear from './models/Bear';
+import Thought from './models/Thought';
 
 app.use(bodyParser.urlencoded({ extended : true }));
 app.use(bodyParser.json());
 
-app.use('/', express.static(path.join(__dirname, 'dist')));
+app.use('/', express.static(path.join(__dirname, 'src')));
 
 const port = process.env.PORT || 8080;
 const router = express.Router();
 
-mongoose.connection.openUri('mongodb://localhost/bears');
+mongoose.connection.openUri('mongodb://localhost/thoughts');
 
 router.use((res, req, next) => {
   console.log("something is happening");
@@ -26,53 +26,54 @@ router.get('/', (req, res) => {
   res.json({ message: "Hello, welcome to our api!"});
 });
 
-router.route('/bears')
-
+router.route('/thoughts')
   .post(({body}, res) => {
-    const bear = new Bear();
-    bear.name = body.name;
-    bear.save(err => {
+    const thought = new Thought();
+    thought.title = body.name;
+    thought.body = body.body;
+    thought.author = body.author;
+    thought.save(err => {
       if(err){
         res.send(err);
       } else {
-        res.json({ message: "Bear is made, now is new Bear." });
+        res.json({ message: "New Thought." });
       }
     });
   })
 
   .get((req, res) => {
-    Bear.find((err, bears) => {
+    Thought.find((err, thoughts) => {
       if(err) {
         res.send(err);
       } else {
-        res.json(bears);
+        res.json(thoughts);
       }
     });
   });
 
-router.route('/bears/:bear_id')
+router.route('/bears/:thought_id')
 
   .get(({params}, res) => {
-    Bear.findById(params.bear_id, (err, bear) => {
+    Thought.findById(params.thought_id, (err, thought) => {
       if(err) {
         res.send(err);
       } else {
-        res.json(bear);
+        res.json(thought);
       }
     });
   })
 
   .put(({params, body}, res) => {
-    Bear.findById(params.bear_id, (err, bear) => {
+    Thought.findById(params.bear_id, (err, thought) => {
       if(err) {
         res.send(err);
       } else {
-        bear.name = body.name;
-        bear.save(err => {
+        thought.name = body.name;
+        thought.save(err => {
           if(err) {
             res.send(err);
           } else {
-            res.json({ message: "Bear was saved very good" });
+            res.json({ message: "Updated Thought." });
           }
         });
       }
@@ -80,13 +81,13 @@ router.route('/bears/:bear_id')
   })
 
   .delete(({params}, res) => {
-    Bear.remove({
-      _id: params.bear_id
+    Thought.remove({
+      _id: params.thought_id
     }, (err, bear) => {
       if(err) {
         res.send(err);
       } else {
-        res.json({ message: "Now is dead bear."});
+        res.json({ message: "Forgot a thought."});
       }
     });
   });
